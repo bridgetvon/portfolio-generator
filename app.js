@@ -1,4 +1,5 @@
-const fs = require('fs');
+//import generate site module 
+const {writeFile,copyFile} = require('./utils/generate-site.js');
 const inquirer = require('inquirer');
 const generatePage = require('./src/page-template.js');
 // const pageHTML = generatePage(userName, github);
@@ -134,26 +135,42 @@ const promptProject = portfolioData => {
 };
 // use a promise to chain functions together using the then method/ call the function 
 
-promptUser()
+// promptUser()
+//     .then(promptProject)
+//     .then(portfolioData => {
+//         const pageHTML = generatePage(portfolioData);
+
+//         fs.writeFile('./dist/index.html');
+//         },
+//         console.log('Page created! Check out index.html in this directory to see it!'));
+        
+//         fs.copyFile('./src/style.css', './dist/style.css', err => {
+//             if (err) {
+//                 console.log(err);
+//                 return;
+//             }
+//             console.log('style sheet copied successfully!');
+//         });
+    //refactor fs functionality to use promises instead of callback functions  
+    promptUser()
     .then(promptProject)
     .then(portfolioData => {
-        const pageHTML = generatePage(portfolioData);
-
-        fs.writeFile('./dist/index.html' , pageHTML, err => {
-        if (err) 
+        return generatePage(portfolioData);
+    })
+    .then(pageHtml => {
+        return writeFile(pageHtml);
+    })
+    .then(writeFileResponse => {
+        console.log(writeFileResponse);
+        return copyFile();
+    })
+    .then(copyFileResponse => {
+        console.log(copyFileResponse);
+    })
+    .catch(err => {
         console.log(err);
-        return;
-        },
-        console.log('Page created! Check out index.html in this directory to see it!');
-        
-        fs.copyFile('./src/style.css', './dist/style.css', err => {
-            if (err) {
-                console.log(err);
-                return;
-            }
-            console.log('style sheet copied successfully!');
-        });
     });
+
 
 
 // //create mock data for testing 
